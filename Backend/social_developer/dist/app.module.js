@@ -10,12 +10,17 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
+const user_module_1 = require("./user/user.module");
+const typeorm_1 = require("@nestjs/typeorm");
+const data_source_1 = require("./db/data-source");
+const auth_module_1 = require("./auth/auth.module");
+const passport_1 = require("@nestjs/passport");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [],
+        imports: [typeorm_1.TypeOrmModule.forRoot(data_source_1.dataSourceOptions), user_module_1.UserModule, auth_module_1.AuthModule, passport_1.PassportModule.register({ defaultStrategy: 'jwt' })],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

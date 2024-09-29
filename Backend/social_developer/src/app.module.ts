@@ -1,9 +1,16 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { UserModule } from './user/user.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { dataSourceOptions } from './db/data-source';
+import { AuthModule } from './auth/auth.module';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
-  imports: [],
+  imports: [TypeOrmModule.forRoot(
+    dataSourceOptions,
+   ), UserModule, AuthModule,PassportModule.register({ defaultStrategy: 'jwt' })],
   controllers: [AppController],
   providers: [AppService],
 })
