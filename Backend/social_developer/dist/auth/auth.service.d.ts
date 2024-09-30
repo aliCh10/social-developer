@@ -8,6 +8,7 @@ export declare class AuthService {
     register(createUserDto: CreateUserDto): Promise<{
         access_token: string;
     }>;
+    validateUser(email: string, password: string): Promise<any>;
     login(user: any): Promise<{
         access_token: string;
     }>;
