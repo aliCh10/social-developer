@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { promises } from 'dns';
 
 @Injectable()
 export class UserService {
@@ -47,5 +48,12 @@ export class UserService {
     return await this.userRepository.findOne({
       where: [{ email }, { username }],
     });
+  }
+
+
+  async findOneUserParEmail(email: string):Promise<User | null>
+  {
+    return await this.userRepository.findOne({where:{email}})
+    
   }
 }

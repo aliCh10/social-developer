@@ -24,7 +24,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
     validate(payload) {
         console.log('Inside JWT Strategy Validate');
         console.log(payload);
-        return payload;
+        return { userId: payload.sub, email: payload.email };
     }
 };
 exports.JwtStrategy = JwtStrategy;

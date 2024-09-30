@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { UserService } from '../user/user.service';
@@ -20,6 +20,19 @@ export class AuthService {
     return this.login(newUser);
   }
 
+  
+
+
+ 
+
+  async validateUser(email: string, password: string): Promise<any> {
+    const user = await this.userService.findOneUserParEmail(email);
+    if (user && await bcrypt.compare(password, user.password)) {
+      return { id: user.id, email: user.email }; // Ne jamais retourner le mot de passe
+    }
+    return null;
+  }
+
   // Generate JWT token for a user
   async login(user: any): Promise<{ access_token: string }> {
     const payload = { username: user.username, id: user.id };
@@ -27,4 +40,9 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
+
+
+
+
+
 }

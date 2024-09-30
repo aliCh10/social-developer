@@ -24,6 +24,18 @@ let AuthController = class AuthController {
     async register(createUserDto) {
         return this.authService.register(createUserDto);
     }
+    async login(body) {
+        const user = await this.authService.validateUser(body.email, body.password);
+        if (!user) {
+            return { statusCode: common_1.HttpStatus.UNAUTHORIZED, message: 'Invalid credentials' };
+        }
+        const token = await this.authService.login(user);
+        return {
+            statusCode: common_1.HttpStatus.OK,
+            message: 'User successfully logged in',
+            token,
+        };
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -36,6 +48,18 @@ __decorate([
     __metadata("design:paramtypes", [create_user_dto_1.CreateUserDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "register", null);
+__decorate([
+    (0, common_1.Post)('login'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Login a user and return a JWT token' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'User successfully logged in' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Bad Request' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "login", null);
 exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiTags)('auth'),
     (0, common_1.Controller)('auth'),

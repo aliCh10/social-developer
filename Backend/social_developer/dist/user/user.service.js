@@ -48,6 +48,9 @@ let UserService = class UserService {
             where: [{ email }, { username }],
         });
     }
+    async findOneUserParEmail(email) {
+        return await this.userRepository.findOne({ where: { email } });
+    }
 };
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([
