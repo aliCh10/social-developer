@@ -16,12 +16,8 @@ export class AuthController {
     return this.authService.register(createUserDto);
   }
 
-
-
-
-
   @Post('login')
-  @HttpCode(HttpStatus.OK) // Pour spécifier le code de statut de succès
+  @HttpCode(HttpStatus.OK)
 
   @ApiOperation({ summary: 'Login a user and return a JWT token' })  
   @ApiResponse({ status: 200, description: 'User successfully logged in' })  
