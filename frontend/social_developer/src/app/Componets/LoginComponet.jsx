@@ -67,15 +67,19 @@ export const LoginComponet = () => {
 
 
         const response = await axios.post("http://localhost:3000/auth/login", data);
-        localStorage.setItem('token', response.data.access_token); // Stocker le token
+
+        if (response.data.statusCode == 200)
+        {
+console.log(response.data.token.access_token);
+
+            localStorage.setItem('token', response.data.token.access_token); // Stocker le token
+        }
 
         console.log('Login successful:', response.data);
         if (response.data.statusCode == 401) {
             setAlert({ message: 'Invalid credentials! Please try again.', type: 'danger', show: true });
         }
-        else {
-            alert("bien");
-        }
+        
 
 
     }
