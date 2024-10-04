@@ -19,6 +19,7 @@
     "owl.carousel": "^2.3.4",
     "react": "^18",
     "react-dom": "^18",
+    "react-feather": "^2.0.10",
     "react-toastify": "^10.0.5",
     "social_developer": "file:"
   }
