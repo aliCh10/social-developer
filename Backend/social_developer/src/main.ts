@@ -18,7 +18,7 @@ async function bootstrap() {
 
    // Activer CORS
    app.enableCors({
-    origin: 'http://localhost:3001', // Remplacez par l'URL de votre frontend
+    origin: ['http://localhost:3001', 'http://localhost:4000'], // Allow both origins
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
