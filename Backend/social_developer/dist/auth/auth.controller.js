@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const create_user_dto_1 = require("../user/dto/create-user.dto");
 const swagger_1 = require("@nestjs/swagger");
+const passport_1 = require("@nestjs/passport");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -34,6 +35,22 @@ let AuthController = class AuthController {
             statusCode: common_1.HttpStatus.OK,
             message: 'User successfully logged in',
             token,
+        };
+    }
+    async googleAuth(req) {
+    }
+    googleAuthRedirect(req) {
+        return {
+            message: 'Authentication successful',
+            user: req.user,
+        };
+    }
+    async facebookAuth(req) {
+    }
+    async facebookAuthRedirect(req) {
+        return {
+            message: 'Authentication with Facebook successful',
+            user: req.user,
         };
     }
 };
@@ -60,6 +77,38 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
+__decorate([
+    (0, common_1.Get)('google'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('google')),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "googleAuth", null);
+__decorate([
+    (0, common_1.Get)('google/redirect'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('google')),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "googleAuthRedirect", null);
+__decorate([
+    (0, common_1.Get)('facebook'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('facebook')),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "facebookAuth", null);
+__decorate([
+    (0, common_1.Get)('facebook/redirect'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('facebook')),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "facebookAuthRedirect", null);
 exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiTags)('auth'),
     (0, common_1.Controller)('auth'),
