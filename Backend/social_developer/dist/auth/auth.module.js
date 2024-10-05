@@ -15,6 +15,8 @@ const auth_controller_1 = require("./auth.controller");
 const jwt_strategy_1 = require("./strategies/jwt.strategy");
 const local_strategy_1 = require("./strategies/local.strategy");
 const user_module_1 = require("../user/user.module");
+const google_strategy_1 = require("./strategies/google.strategy");
+const facebook_strategy_1 = require("./strategies/facebook.strategy");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -29,7 +31,7 @@ exports.AuthModule = AuthModule = __decorate([
             user_module_1.UserModule,
         ],
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, local_strategy_1.LocalStrategy, jwt_strategy_1.JwtStrategy],
+        providers: [auth_service_1.AuthService, local_strategy_1.LocalStrategy, jwt_strategy_1.JwtStrategy, google_strategy_1.GoogleStrategy, facebook_strategy_1.FacebookStrategy],
     })
 ], AuthModule);
 //# sourceMappingURL=auth.module.js.map

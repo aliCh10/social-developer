@@ -21,4 +21,14 @@ export declare class AuthController {
             access_token: string;
         };
     }>;
+    googleAuth(req: any): Promise<void>;
+    googleAuthRedirect(req: any): {
+        message: string;
+        user: any;
+    };
+    facebookAuth(req: any): Promise<void>;
+    facebookAuthRedirect(req: any): Promise<{
+        message: string;
+        user: any;
+    }>;
 }
