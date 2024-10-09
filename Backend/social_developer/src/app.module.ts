@@ -7,6 +7,7 @@ import { dataSourceOptions } from './db/data-source';
 import { AuthModule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot(
@@ -15,7 +16,7 @@ import { ConfigModule } from '@nestjs/config';
    ConfigModule.forRoot({
     isGlobal: true, // Rend les variables d'environnement accessibles dans tout le projet
   }),
-   UserModule, AuthModule,PassportModule.register({ defaultStrategy: 'jwt' })],
+   UserModule, AuthModule,PassportModule.register({ defaultStrategy: 'jwt' }), PostsModule],
   controllers: [AppController],
   providers: [AppService],
 })

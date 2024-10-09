@@ -137,9 +137,6 @@ function HomeComponet() {
           </div>
         </div>
       </div>
-      
-      {/* <Script src="/js/scripts.js" strategy="afterInteractive" />
-      <Script src="/js/lightbox.js" strategy="afterInteractive" /> */}
     </div>
   );
 }
