@@ -16,6 +16,7 @@ const data_source_1 = require("./db/data-source");
 const auth_module_1 = require("./auth/auth.module");
 const passport_1 = require("@nestjs/passport");
 const config_1 = require("@nestjs/config");
+const posts_module_1 = require("./posts/posts.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -25,7 +26,7 @@ exports.AppModule = AppModule = __decorate([
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
             }),
-            user_module_1.UserModule, auth_module_1.AuthModule, passport_1.PassportModule.register({ defaultStrategy: 'jwt' })],
+            user_module_1.UserModule, auth_module_1.AuthModule, passport_1.PassportModule.register({ defaultStrategy: 'jwt' }), posts_module_1.PostsModule],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

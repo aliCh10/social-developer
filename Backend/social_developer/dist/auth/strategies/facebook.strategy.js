@@ -20,7 +20,18 @@ let FacebookStrategy = class FacebookStrategy extends (0, passport_1.PassportStr
             clientSecret: process.env.FACEBOOK_APP_SECRET,
             callbackURL: process.env.FACEBOOK_CALLBACK_URL,
             scope: ['email'],
+            profileFields: ['id', 'emails', 'name'],
         });
+    }
+    async validate(accessToken, refreshToken, profile, done) {
+        const { name, emails } = profile;
+        const user = {
+            email: emails && emails[0].value,
+            firstName: name?.givenName,
+            lastName: name?.familyName,
+            accessToken,
+        };
+        done(null, user);
     }
 };
 exports.FacebookStrategy = FacebookStrategy;
