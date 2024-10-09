@@ -1,9 +1,13 @@
+import { IsOptional, IsString } from 'class-validator';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ unique: true,nullable: true })
+  googleId: string;  
 
 
   @Column({ unique: true })
@@ -12,6 +16,12 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ unique: true }) // Ensure username is unique
-  username: string; // Add this if it doesn't exist
+  @Column({ unique: true })
+  username: string;
+
+  @IsOptional()
+  @IsString()
+  @Column({ nullable: true, unique: true })  // Ensure this is a nullable column and unique
+  facebookId: string;
+
 }

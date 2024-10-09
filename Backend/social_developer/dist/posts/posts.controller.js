@@ -33,7 +33,10 @@ let PostsController = class PostsController {
     findOne(id) {
         return this.postsService.findOne(+id);
     }
-    update(id, updatePostDto, file) {
+    async update(id, updatePostDto, file) {
+        if (!file) {
+            return this.postsService.update(+id, updatePostDto, null);
+        }
         return this.postsService.update(+id, updatePostDto, file);
     }
     remove(id) {
@@ -95,13 +98,37 @@ __decorate([
     (0, common_1.Put)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Update a post by ID' }),
     (0, swagger_1.ApiConsumes)('multipart/form-data'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('image')),
+    (0, swagger_1.ApiBody)({
+        schema: {
+            type: 'object',
+            properties: {
+                description: { type: 'string', nullable: true },
+                image: { type: 'string', format: 'binary', nullable: true },
+            },
+        },
+    }),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('image', {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads',
+            filename: (req, file, cb) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+                const ext = (0, path_1.extname)(file.originalname);
+                cb(null, `${uniqueSuffix}${ext}`);
+            },
+        }),
+        fileFilter: (req, file, cb) => {
+            if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|pdf|txt)$/)) {
+                return cb(new common_1.BadRequestException('Only image and PDF/TXT files are allowed!'), false);
+            }
+            cb(null, true);
+        },
+    })),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, create_post_dto_1.CreatePostDto, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], PostsController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),

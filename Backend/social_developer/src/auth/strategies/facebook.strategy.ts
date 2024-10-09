@@ -1,33 +1,40 @@
-import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-facebook';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
-  constructor() {
+  constructor(private readonly authService: AuthService) {
     super({
       clientID: process.env.FACEBOOK_APP_ID,
       clientSecret: process.env.FACEBOOK_APP_SECRET,
-      callbackURL: process.env.FACEBOOK_CALLBACK_URL,
-      scope: ['email'],
-      profileFields: ['id', 'emails', 'name'], // Champs du profil à récupérer
+      callbackURL: 'http://localhost:3000/auth/facebook/callback',
+      profileFields: ['id', 'emails', 'name', 'photos'],
     });
   }
 
-  // Méthode de validation, on peut utiliser ici un UserService pour gérer l'utilisateur
-  async validate(
-    accessToken: string,
-    refreshToken: string,
-    profile: Profile,
-    done: Function,
-  ): Promise<any> {
-    const { name, emails } = profile;
+  async validate(accessToken: string, refreshToken: string, profile: Profile, done: Function) {
+    const { emails, id, name, photos } = profile; // Extract name and photos
+  
+    // Extract email, if available
+    const email = emails && emails.length > 0 ? emails[0].value : null;
+    const photoUrl = photos && photos.length > 0 ? photos[0].value : null;
+
+    // Log the profile for debugging
+
+    // Check if the email is available
+    if (!email) {
+      return done(new Error('No email provided by Facebook'), false);
+    }
     const user = {
-      email: emails && emails[0].value,
-      firstName: name?.givenName,
-      lastName: name?.familyName,
-      accessToken,
+      facebookId: id,
+      email: emails[0].value,
+      firstName: name.givenName,
+      lastName: name.familyName,
+      picture: photos[0].value,
     };
-    done(null, user); // Appelle done avec l'utilisateur pour l'attacher à la requête
+    const validatedUser = await this.authService.createOrUpdateFacebookUser(user);
+    done(null, validatedUser);
   }
 }

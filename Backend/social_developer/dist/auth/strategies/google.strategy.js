@@ -13,19 +13,37 @@ exports.GoogleStrategy = void 0;
 const passport_1 = require("@nestjs/passport");
 const common_1 = require("@nestjs/common");
 const passport_google_oauth20_1 = require("passport-google-oauth20");
+const auth_service_1 = require("../auth.service");
 let GoogleStrategy = class GoogleStrategy extends (0, passport_1.PassportStrategy)(passport_google_oauth20_1.Strategy, 'google') {
-    constructor() {
+    constructor(authService) {
         super({
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: 'http://localhost:3000/auth/google/redirect',
+            callbackURL: 'http://localhost:3000/auth/google/callback',
             scope: ['email', 'profile'],
         });
+        this.authService = authService;
+    }
+    async validate(accessToken, refreshToken, profile, done) {
+        try {
+            const { name, emails, id } = profile;
+            const user = {
+                googleId: id,
+                username: `${name.givenName} ${name.familyName}`,
+                email: emails[0].value,
+                accessToken,
+            };
+            const savedUser = await this.authService.createOrUpdateGoogleUser(user);
+            done(null, savedUser);
+        }
+        catch (err) {
+            done(err, false);
+        }
     }
 };
 exports.GoogleStrategy = GoogleStrategy;
 exports.GoogleStrategy = GoogleStrategy = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], GoogleStrategy);
 //# sourceMappingURL=google.strategy.js.map

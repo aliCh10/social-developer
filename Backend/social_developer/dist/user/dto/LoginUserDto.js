@@ -9,39 +9,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
+exports.LoginUserDto = void 0;
+const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
-const typeorm_1 = require("typeorm");
-let User = class User {
-};
-exports.User = User;
+class LoginUserDto {
+}
+exports.LoginUserDto = LoginUserDto;
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", Number)
-], User.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true, nullable: true }),
+    (0, swagger_1.ApiProperty)({ description: 'email of the user' }),
+    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], User.prototype, "googleId", void 0);
+], LoginUserDto.prototype, "email", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ unique: true }),
-    __metadata("design:type", String)
-], User.prototype, "email", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], User.prototype, "password", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ unique: true }),
-    __metadata("design:type", String)
-], User.prototype, "username", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({ description: 'Password of the user', minLength: 8, maxLength: 20 }),
     (0, class_validator_1.IsString)(),
-    (0, typeorm_1.Column)({ nullable: true, unique: true }),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], User.prototype, "facebookId", void 0);
-exports.User = User = __decorate([
-    (0, typeorm_1.Entity)()
-], User);
-//# sourceMappingURL=user.entity.js.map
+], LoginUserDto.prototype, "password", void 0);
+//# sourceMappingURL=LoginUserDto.js.map
