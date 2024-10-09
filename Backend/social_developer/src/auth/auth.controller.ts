@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { LoginUserDto } from 'src/user/dto/LoginUserDto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -16,24 +17,22 @@ export class AuthController {
   async register(@Body() createUserDto: CreateUserDto) {
     return this.authService.register(createUserDto);
   }
-
   @Post('login')
   @HttpCode(HttpStatus.OK)
-
-  @ApiOperation({ summary: 'Login a user and return a JWT token' })  
-  @ApiResponse({ status: 200, description: 'User successfully logged in' })  
-  @ApiResponse({ status: 401, description: 'Unauthorized' })  
-  @ApiResponse({ status: 400, description: 'Bad Request' })  
-  async login(@Body() body: { email: string; password: string }) {
-    const user = await this.authService.validateUser(body.email, body.password);
+  @ApiOperation({ summary: 'Login a user and return a JWT token' })
+  @ApiResponse({ status: 200, description: 'User successfully logged in' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  async login(@Body() loginUserDto: LoginUserDto) {
+    const user = await this.authService.validateUser(loginUserDto.email, loginUserDto.password);
     if (!user) {
-      return { statusCode: HttpStatus.UNAUTHORIZED,message: 'Invalid credentials' };
+      return { statusCode: HttpStatus.UNAUTHORIZED, message: 'Invalid credentials' };
     }
     const token = await this.authService.login(user);
     return {
-      statusCode: HttpStatus.OK,  
+      statusCode: HttpStatus.OK,
       message: 'User successfully logged in',
-      token,  
+      token,
     };
   }
   @Get('google')
@@ -41,7 +40,7 @@ export class AuthController {
   async googleAuth(@Req() req) {
   }
 
-  @Get('google/redirect')
+  @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   googleAuthRedirect(@Req() req) {
     return {
@@ -55,7 +54,7 @@ export class AuthController {
   async facebookAuth(@Req() req) {
   }
 
-  @Get('facebook/redirect')
+  @Get('facebook/callback')
   @UseGuards(AuthGuard('facebook'))
   async facebookAuthRedirect(@Req() req) {
     return {

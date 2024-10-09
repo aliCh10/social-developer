@@ -23,33 +23,37 @@ let UserService = class UserService {
         this.userRepository = userRepository;
     }
     async create(createUserDto) {
-        if (createUserDto.password !== createUserDto.confirmPassword) {
-            throw new common_1.BadRequestException('Passwords do not match');
-        }
         const existingUser = await this.findOneByEmailOrUsername(createUserDto.email, createUserDto.username);
         if (existingUser) {
             throw new common_1.BadRequestException('Email or Username already exists');
         }
         const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
         const { confirmPassword, ...userData } = createUserDto;
-        const newUser = this.userRepository.create({
-            ...userData,
-            password: hashedPassword,
-        });
-        try {
-            return await this.userRepository.save(newUser);
-        }
-        catch (error) {
-            throw new common_1.BadRequestException('Failed to create user');
-        }
+        const newUser = this.userRepository.create({ ...userData, password: hashedPassword });
+        return this.userRepository.save(newUser);
+    }
+    async createGoogleUser(userDto) {
+        const newUser = this.userRepository.create(userDto);
+        return this.userRepository.save(newUser);
+    }
+    async createFacebookUser(userDto) {
+        const newUser = this.userRepository.create(userDto);
+        return this.userRepository.save(newUser);
     }
     async findOneByEmailOrUsername(email, username) {
-        return await this.userRepository.findOne({
-            where: [{ email }, { username }],
-        });
+        return await this.userRepository.findOne({ where: [{ email }, { username }] });
     }
-    async findOneUserParEmail(email) {
+    async findOneByEmail(email) {
         return await this.userRepository.findOne({ where: { email } });
+    }
+    async findOneByGoogleId(googleId) {
+        return await this.userRepository.findOne({ where: { googleId } });
+    }
+    async findOneByFacebookId(facebookId) {
+        return await this.userRepository.findOne({ where: { facebookId } });
+    }
+    async save(user) {
+        return this.userRepository.save(user);
     }
 };
 exports.UserService = UserService;

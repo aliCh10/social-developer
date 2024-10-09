@@ -1,10 +1,9 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { promises } from 'dns';
 
 @Injectable()
 export class UserService {
@@ -13,47 +12,55 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  // Create a new user
+  // Create a new user with email/password
   async create(createUserDto: CreateUserDto): Promise<User> {
-    // Check if passwords match
-    if (createUserDto.password !== createUserDto.confirmPassword) {
-      throw new BadRequestException('Passwords do not match');
-    }
-
-    // Check if email or username already exists
     const existingUser = await this.findOneByEmailOrUsername(createUserDto.email, createUserDto.username);
     if (existingUser) {
       throw new BadRequestException('Email or Username already exists');
     }
 
-    // Hash the password before saving
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-
-    // Create the user without confirmPassword
     const { confirmPassword, ...userData } = createUserDto;
-    const newUser = this.userRepository.create({
-      ...userData,
-      password: hashedPassword,
-    });
-
-    try {
-      return await this.userRepository.save(newUser);
-    } catch (error) {
-      throw new BadRequestException('Failed to create user');
-    }
-  }
-
-  // Find a user by email or username
-  async findOneByEmailOrUsername(email: string, username: string): Promise<User | null> {
-    return await this.userRepository.findOne({
-      where: [{ email }, { username }],
-    });
-  }
-
-
-  async findOneUserParEmail(email: string):Promise<User | null>
-  {
-    return await this.userRepository.findOne({where:{email}})
+    const newUser = this.userRepository.create({ ...userData, password: hashedPassword });
     
+    return this.userRepository.save(newUser);
+  }
+
+  // Create a new Google user
+  async createGoogleUser(userDto: Partial<User>): Promise<User> {
+    const newUser = this.userRepository.create(userDto);
+    return this.userRepository.save(newUser);
+  }
+
+  // Create a new Facebook user
+  async createFacebookUser(userDto: Partial<User>): Promise<User> {
+    const newUser = this.userRepository.create(userDto);
+    return this.userRepository.save(newUser);
+  }
+
+  // Find user by email or username
+  async findOneByEmailOrUsername(email: string, username: string): Promise<User | null> {
+    return await this.userRepository.findOne({ where: [{ email }, { username }] });
+  }
+
+  // Find user by email
+  async findOneByEmail(email: string): Promise<User | null> {
+    return await this.userRepository.findOne({ where: { email } });
+  }
+
+  // Find user by Google ID
+  async findOneByGoogleId(googleId: string): Promise<User | null> {
+    return await this.userRepository.findOne({ where: { googleId } });
+  }
+
+  // Find user by Facebook ID
+  async findOneByFacebookId(facebookId: string): Promise<User | null> {
+    return await this.userRepository.findOne({ where: { facebookId } });
+  }
+
+  // Save or update a user
+  async save(user: User): Promise<User> {
+    return this.userRepository.save(user);
   }
 }
+  

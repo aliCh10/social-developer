@@ -18,6 +18,7 @@ const auth_service_1 = require("./auth.service");
 const create_user_dto_1 = require("../user/dto/create-user.dto");
 const swagger_1 = require("@nestjs/swagger");
 const passport_1 = require("@nestjs/passport");
+const LoginUserDto_1 = require("../user/dto/LoginUserDto");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -25,8 +26,8 @@ let AuthController = class AuthController {
     async register(createUserDto) {
         return this.authService.register(createUserDto);
     }
-    async login(body) {
-        const user = await this.authService.validateUser(body.email, body.password);
+    async login(loginUserDto) {
+        const user = await this.authService.validateUser(loginUserDto.email, loginUserDto.password);
         if (!user) {
             return { statusCode: common_1.HttpStatus.UNAUTHORIZED, message: 'Invalid credentials' };
         }
@@ -74,7 +75,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 400, description: 'Bad Request' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [LoginUserDto_1.LoginUserDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
@@ -86,7 +87,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "googleAuth", null);
 __decorate([
-    (0, common_1.Get)('google/redirect'),
+    (0, common_1.Get)('google/callback'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('google')),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -102,7 +103,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "facebookAuth", null);
 __decorate([
-    (0, common_1.Get)('facebook/redirect'),
+    (0, common_1.Get)('facebook/callback'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('facebook')),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),

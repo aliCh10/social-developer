@@ -10,33 +10,41 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FacebookStrategy = void 0;
-const passport_1 = require("@nestjs/passport");
 const common_1 = require("@nestjs/common");
+const passport_1 = require("@nestjs/passport");
 const passport_facebook_1 = require("passport-facebook");
+const auth_service_1 = require("../auth.service");
 let FacebookStrategy = class FacebookStrategy extends (0, passport_1.PassportStrategy)(passport_facebook_1.Strategy, 'facebook') {
-    constructor() {
+    constructor(authService) {
         super({
             clientID: process.env.FACEBOOK_APP_ID,
             clientSecret: process.env.FACEBOOK_APP_SECRET,
-            callbackURL: process.env.FACEBOOK_CALLBACK_URL,
-            scope: ['email'],
-            profileFields: ['id', 'emails', 'name'],
+            callbackURL: 'http://localhost:3000/auth/facebook/callback',
+            profileFields: ['id', 'emails', 'name', 'photos'],
         });
+        this.authService = authService;
     }
     async validate(accessToken, refreshToken, profile, done) {
-        const { name, emails } = profile;
+        const { emails, id, name, photos } = profile;
+        const email = emails && emails.length > 0 ? emails[0].value : null;
+        const photoUrl = photos && photos.length > 0 ? photos[0].value : null;
+        if (!email) {
+            return done(new Error('No email provided by Facebook'), false);
+        }
         const user = {
-            email: emails && emails[0].value,
-            firstName: name?.givenName,
-            lastName: name?.familyName,
-            accessToken,
+            facebookId: id,
+            email: emails[0].value,
+            firstName: name.givenName,
+            lastName: name.familyName,
+            picture: photos[0].value,
         };
-        done(null, user);
+        const validatedUser = await this.authService.createOrUpdateFacebookUser(user);
+        done(null, validatedUser);
     }
 };
 exports.FacebookStrategy = FacebookStrategy;
 exports.FacebookStrategy = FacebookStrategy = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], FacebookStrategy);
 //# sourceMappingURL=facebook.strategy.js.map
