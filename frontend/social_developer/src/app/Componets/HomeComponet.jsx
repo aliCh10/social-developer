@@ -4,7 +4,7 @@ import React from 'react'
 import NavBarComponent from './NavBarComponet'
 import SideBar from './SideBar'
 import { Edit3, Video, Image, Camera, Bookmark, AlertCircle, AlertOctagon, Lock,Send  } from 'react-feather';
-import Script from 'next/script'; // Import Script component from Next.js
+import { useRouter } from 'next/navigation';
 
 import './css/style.css'
 import './css/feather.css'
@@ -30,6 +30,15 @@ function HomeComponet() {
   //     document.body.removeChild(lightboxScript);
   //   };
   // }, []);
+  const router = useRouter();
+
+  const handleLogout = () => {
+    // Supprimer le token du localStorage (ou sessionStorage si tu l'utilises)
+    localStorage.removeItem('token');
+
+    // Rediriger vers la page de connexion
+    router.push('/Login');
+  };
 
   return (
 
@@ -130,14 +139,17 @@ function HomeComponet() {
                     </div> */}
                   </div>
                 </div>
-
-
+                <div className="form-group mb-1">
+                   <button  onClick={handleLogout}>deconnexion </button>
+                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+     
     </div>
+    
   );
 }
 

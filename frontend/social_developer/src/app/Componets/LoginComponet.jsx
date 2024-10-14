@@ -64,21 +64,21 @@ export const LoginComponet = () => {
             setTimeout(() => {
                 window.location.href = '/Home';
             }, 1000);
-
         }
 
         console.log('Login successful:', response.data);
         if (response.data.statusCode == 401) {
             setAlert({ message: 'Invalid credentials! Please try again.', type: 'danger', show: true });
         }
+    };
 
+    const handleGoogleSignIn = () => {
+        window.location.href = 'http://localhost:3000/auth/google?prompt=select_account'; // Force account selection
+    };
 
-
-    }
-
-
-
-
+    const handleFacebookSignIn = () => {
+        window.location.href = 'http://localhost:3000/auth/facebook'; // Redirect to the Facebook OAuth flow
+    };
 
     return (
         <div className="color-theme-blue">
@@ -100,8 +100,6 @@ export const LoginComponet = () => {
                         <a href="#" className="me-2 menu-search-icon mob-menu">
                             <i className="feather-search text-grey-900 font-sm btn-round-md bg-greylight"></i>
                         </a>
-                        {/* <button className="nav-menu me-0 ms-2"></button> */}
-
                         {/* Login Button */}
                         <Link href="/login"
                             className="header-btn d-none d-lg-block bg-dark fw-500 text-white font-xsss p-3 ms-auto w100 text-center lh-20 rounded-xl">
@@ -185,22 +183,22 @@ export const LoginComponet = () => {
                                         Or, Sign in with your social account
                                     </h6>
                                     <div className="form-group mb-1">
-                                        <Link href="#" className="form-control text-left style2-input text-white fw-600 bg-facebook border-0 p-0 mb-2">
+                                        <button onClick={handleGoogleSignIn} className="form-control text-left style2-input text-white fw-600 bg-facebook border-0 p-0 mb-2">
                                             <img src="/images/icon-1.png" alt="icon" className="ms-2 w40 mb-1 me-5" /> Sign in with Google
-                                        </Link>
+                                        </button>
                                     </div>
                                     <div className="form-group mb-1">
-                                        <Link href="#" className="form-control text-left style2-input text-white fw-600 bg-twiiter border-0 p-0">
+                                        <button onClick={handleFacebookSignIn} className="form-control text-left style2-input text-white fw-600 bg-twiiter border-0 p-0">
                                             <img src="/images/icon-3.png" alt="icon" className="ms-2 w40 mb-1 me-5" /> Sign in with Facebook
-                                        </Link>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
+
             <ToastContainer />
         </div>
     );
