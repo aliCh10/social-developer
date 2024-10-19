@@ -1,5 +1,6 @@
 import { IsOptional, IsString } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Post } from 'src/posts/entities/post.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -19,9 +20,17 @@ export class User {
   @Column({ unique: true })
   username: string;
 
+  
+ 
+
   @IsOptional()
   @IsString()
-  @Column({ nullable: true, unique: true })  // Ensure this is a nullable column and unique
+  @Column({ nullable: true, unique: true }) 
   facebookId: string;
+
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[];
+
+  
 
 }

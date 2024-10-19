@@ -17,14 +17,20 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const post_entity_1 = require("./entities/post.entity");
+const user_entity_1 = require("../user/entities/user.entity");
 let PostsService = class PostsService {
-    constructor(postRepository) {
+    constructor(postRepository, userRepository) {
         this.postRepository = postRepository;
+        this.userRepository = userRepository;
     }
     async create(createPostDto, file) {
-        const { description } = createPostDto;
+        const { description, userId } = createPostDto;
         if (!description && !file) {
             throw new common_1.BadRequestException('Either description or image is required');
+        }
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        if (!user) {
+            throw new common_1.NotFoundException('User not found');
         }
         const post = new post_entity_1.Post();
         if (description) {
@@ -32,6 +38,9 @@ let PostsService = class PostsService {
         }
         if (file) {
             post.imageUrl = file.filename;
+        }
+        if (user) {
+            post.user = user;
         }
         return await this.postRepository.save(post);
     }
@@ -63,11 +72,24 @@ let PostsService = class PostsService {
         const post = await this.findOne(id);
         await this.postRepository.remove(post);
     }
+    async getPostsByUserId(userId) {
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        if (!user) {
+            throw new common_1.NotFoundException('User not found');
+        }
+        const posts = await this.postRepository.find({
+            where: { user: { id: userId } },
+            relations: ['user'],
+        });
+        return posts;
+    }
 };
 exports.PostsService = PostsService;
 exports.PostsService = PostsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(post_entity_1.Post)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository])
 ], PostsService);
 //# sourceMappingURL=posts.service.js.map
