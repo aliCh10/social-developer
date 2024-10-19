@@ -5,6 +5,7 @@ function page() {
   return (
     <div>
       <HomeComponet/>
+   
     </div>
   )
 }

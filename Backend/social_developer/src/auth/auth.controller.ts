@@ -1,9 +1,10 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Get, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Get, UseGuards, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { LoginUserDto } from 'src/user/dto/LoginUserDto';
+import { Response } from 'express'; // Import Response for handling redirection
 
 @ApiTags('auth')
 @Controller('auth')
@@ -17,6 +18,7 @@ export class AuthController {
   async register(@Body() createUserDto: CreateUserDto) {
     return this.authService.register(createUserDto);
   }
+
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login a user and return a JWT token' })
@@ -35,33 +37,47 @@ export class AuthController {
       token,
     };
   }
+
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req) {
-  }
+  async googleAuth(@Req() req) {}
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  googleAuthRedirect(@Req() req) {
-    return {
-      message: 'Authentication successful',
-      user: req.user,
-    };
+  async googleAuthRedirect(@Req() req, @Res() res: Response) {
+    // Successful authentication with Google
+    const user = req.user; // This will contain user data after successful Google authentication
+
+    const token = await this.authService.login(user);
+    
+    return res.redirect(`http://localhost:3001/Home?token=${token}`);
   }
-   
+
   @Get('facebook')
   @UseGuards(AuthGuard('facebook'))
-  async facebookAuth(@Req() req) {
-  }
+  async facebookAuth(@Req() req) {}
 
   @Get('facebook/callback')
   @UseGuards(AuthGuard('facebook'))
-  async facebookAuthRedirect(@Req() req) {
-    return {
-      message: 'Authentication with Facebook successful',
-      user: req.user,
-    };
+  async facebookAuthRedirect(@Req() req, @Res() res: Response) {
+    const user = req.user; // This will contain user data after successful Facebook authentication
+
+    // Generate the JWT token
+    const token = await this.authService.login(user);
+    console.log('token',token);
+    
+    return res.redirect(`http://localhost:3001/Home?token=${token}`);
+  }
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Log out a user and invalidate the session' })
+  @ApiResponse({ status: 200, description: 'User successfully logged out' })
+  async logout(@Req() req, @Res() res: Response) {
+    const token = req.headers.authorization?.split(' ')[1]; 
+    
+    res.clearCookie('jwt');  
+
+    return res.redirect('http://localhost:3001/login');  
   }
 
-  
 }

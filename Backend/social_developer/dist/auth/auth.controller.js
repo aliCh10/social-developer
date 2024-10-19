@@ -38,21 +38,23 @@ let AuthController = class AuthController {
             token,
         };
     }
-    async googleAuth(req) {
+    async googleAuth(req) { }
+    async googleAuthRedirect(req, res) {
+        const user = req.user;
+        const token = await this.authService.login(user);
+        return res.redirect(`http://localhost:3001/Home?token=${token}`);
     }
-    googleAuthRedirect(req) {
-        return {
-            message: 'Authentication successful',
-            user: req.user,
-        };
+    async facebookAuth(req) { }
+    async facebookAuthRedirect(req, res) {
+        const user = req.user;
+        const token = await this.authService.login(user);
+        console.log('token', token);
+        return res.redirect(`http://localhost:3001/Home?token=${token}`);
     }
-    async facebookAuth(req) {
-    }
-    async facebookAuthRedirect(req) {
-        return {
-            message: 'Authentication with Facebook successful',
-            user: req.user,
-        };
+    async logout(req, res) {
+        const token = req.headers.authorization?.split(' ')[1];
+        res.clearCookie('jwt');
+        return res.redirect('http://localhost:3001/login');
     }
 };
 exports.AuthController = AuthController;
@@ -90,9 +92,10 @@ __decorate([
     (0, common_1.Get)('google/callback'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('google')),
     __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
 ], AuthController.prototype, "googleAuthRedirect", null);
 __decorate([
     (0, common_1.Get)('facebook'),
@@ -106,10 +109,22 @@ __decorate([
     (0, common_1.Get)('facebook/callback'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('facebook')),
     __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "facebookAuthRedirect", null);
+__decorate([
+    (0, common_1.Post)('logout'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Log out a user and invalidate the session' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'User successfully logged out' }),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "logout", null);
 exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiTags)('auth'),
     (0, common_1.Controller)('auth'),

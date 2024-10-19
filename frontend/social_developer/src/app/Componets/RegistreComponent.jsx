@@ -61,6 +61,13 @@ export default function RegistreComponent() {
       });
     }
   };
+  const handleGoogleSignIn = () => {
+    window.location.href = 'http://localhost:3000/auth/google'; // Redirect to the Google OAuth flow
+};
+
+const handleFacebookSignIn = () => {
+    window.location.href = 'http://localhost:3000/auth/facebook'; // Redirect to the Facebook OAuth flow
+};
   
 
   const validateFields = () => {
@@ -183,15 +190,15 @@ export default function RegistreComponent() {
                     Or, Sign in with your social account
                   </h6>
                   <div className="form-group mb-1">
-                    <a href="#" className="form-control text-left style2-input text-white fw-600 bg-facebook border-0 p-0 mb-2">
-                      <img src="/images/icon-1.png" alt="icon" className="ms-2 w40 mb-1 me-5" /> Sign in with Google
-                    </a>
-                  </div>
-                  <div className="form-group mb-1">
-                    <a href="#" className="form-control text-left style2-input text-white fw-600 bg-twiiter border-0 p-0">
-                      <img src="/images/icon-3.png" alt="icon" className="ms-2 w40 mb-1 me-5" /> Sign in with Facebook
-                    </a>
-                  </div>
+                                        <button onClick={handleGoogleSignIn} className="form-control text-left style2-input text-white fw-600 bg-facebook border-0 p-0 mb-2">
+                                            <img src="/images/icon-1.png" alt="icon" className="ms-2 w40 mb-1 me-5" /> Sign in with Google
+                                        </button>
+                                    </div>
+                                    <div className="form-group mb-1">
+                                        <button onClick={handleFacebookSignIn} className="form-control text-left style2-input text-white fw-600 bg-twiiter border-0 p-0">
+                                            <img src="/images/icon-3.png" alt="icon" className="ms-2 w40 mb-1 me-5" /> Sign in with Facebook
+                                        </button>
+                                    </div>
                 </div>
               </div>
             </div>
