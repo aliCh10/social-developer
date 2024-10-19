@@ -1,4 +1,5 @@
 import { IsString, IsEmail, Length, IsOptional } from 'class-validator';
+import { Post } from 'src/posts/entities/post.entity';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -17,4 +18,7 @@ export class UpdateUserDto {
   @IsOptional()
   @IsEmail()
   email?: string;
+
+  @IsOptional() 
+  posts?: Post[];
 }

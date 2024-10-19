@@ -16,6 +16,7 @@ import { extname } from 'path';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { Post } from './entities/post.entity';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -31,6 +32,8 @@ export class PostsController {
       properties: {
         description: { type: 'string', nullable: true },
         image: { type: 'string', format: 'binary', nullable: true },
+        userId: { type: 'integer', description: 'ID of the user creating the post' }, 
+
       },
     },
   })
@@ -53,6 +56,8 @@ export class PostsController {
     }),
   )
   create(@Body() createPostDto: CreatePostDto, @UploadedFile() file: Express.Multer.File) {
+    console.log('Received body:', createPostDto);
+    console.log('Received file:', file);
     return this.postsService.create(createPostDto, file);
   }
 
@@ -67,6 +72,13 @@ export class PostsController {
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(+id);
   }
+
+  @Get('user/:userId')
+  @ApiOperation({ summary: 'Get posts by User ID' })
+  async getPostsByUserId(@Param('userId') userId: number): Promise<Post[]> {
+    return this.postsService.getPostsByUserId(userId);
+  }
+
 
   @Put(':id')
   @ApiOperation({ summary: 'Update a post by ID' })

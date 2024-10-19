@@ -25,6 +25,8 @@ let PostsController = class PostsController {
         this.postsService = postsService;
     }
     create(createPostDto, file) {
+        console.log('Received body:', createPostDto);
+        console.log('Received file:', file);
         return this.postsService.create(createPostDto, file);
     }
     findAll() {
@@ -32,6 +34,9 @@ let PostsController = class PostsController {
     }
     findOne(id) {
         return this.postsService.findOne(+id);
+    }
+    async getPostsByUserId(userId) {
+        return this.postsService.getPostsByUserId(userId);
     }
     async update(id, updatePostDto, file) {
         if (!file) {
@@ -54,6 +59,7 @@ __decorate([
             properties: {
                 description: { type: 'string', nullable: true },
                 image: { type: 'string', format: 'binary', nullable: true },
+                userId: { type: 'integer', description: 'ID of the user creating the post' },
             },
         },
     }),
@@ -94,6 +100,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PostsController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Get)('user/:userId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get posts by User ID' }),
+    __param(0, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], PostsController.prototype, "getPostsByUserId", null);
 __decorate([
     (0, common_1.Put)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Update a post by ID' }),

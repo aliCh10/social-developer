@@ -6,10 +6,7 @@ import SideBar from './SideBar'
 import { Edit3, Video, Image, Camera, Bookmark, AlertCircle, AlertOctagon, Lock,Send  } from 'react-feather';
 import { useRouter } from 'next/navigation';
 
-import './css/style.css'
-import './css/feather.css'
-import './css/themify-icons.css'
-import './css/lightbox.css'
+import AjouterPostComponet from './poste/AjouterPostComponet';
 
 
 function HomeComponet() {
@@ -41,8 +38,6 @@ function HomeComponet() {
   };
 
   return (
-
-
     <div className="main-wrapper">
       <NavBarComponent />
       <SideBar />
@@ -153,4 +148,4 @@ function HomeComponet() {
   );
 }
 
-export default HomeComponet
+export default HomeComponet;
