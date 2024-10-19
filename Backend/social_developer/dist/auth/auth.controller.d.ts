@@ -2,6 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoginUserDto } from 'src/user/dto/LoginUserDto';
+import { Response } from 'express';
 export declare class AuthController {
     private authService;
     constructor(authService: AuthService);
@@ -20,13 +21,7 @@ export declare class AuthController {
         };
     }>;
     googleAuth(req: any): Promise<void>;
-    googleAuthRedirect(req: any): {
-        message: string;
-        user: any;
-    };
+    googleAuthRedirect(req: any, res: Response): Promise<void>;
     facebookAuth(req: any): Promise<void>;
-    facebookAuthRedirect(req: any): Promise<{
-        message: string;
-        user: any;
-    }>;
+    facebookAuthRedirect(req: any, res: Response): Promise<void>;
 }

@@ -38,21 +38,18 @@ let AuthController = class AuthController {
             token,
         };
     }
-    async googleAuth(req) {
+    async googleAuth(req) { }
+    async googleAuthRedirect(req, res) {
+        const user = req.user;
+        const token = await this.authService.login(user);
+        return res.redirect(`http://localhost:3001/Home?token=${token}`);
     }
-    googleAuthRedirect(req) {
-        return {
-            message: 'Authentication successful',
-            user: req.user,
-        };
-    }
-    async facebookAuth(req) {
-    }
-    async facebookAuthRedirect(req) {
-        return {
-            message: 'Authentication with Facebook successful',
-            user: req.user,
-        };
+    async facebookAuth(req) { }
+    async facebookAuthRedirect(req, res) {
+        const user = req.user;
+        const token = await this.authService.login(user);
+        console.log('token', token);
+        return res.redirect(`http://localhost:3001/Home?token=${token}`);
     }
 };
 exports.AuthController = AuthController;
@@ -90,9 +87,10 @@ __decorate([
     (0, common_1.Get)('google/callback'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('google')),
     __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
 ], AuthController.prototype, "googleAuthRedirect", null);
 __decorate([
     (0, common_1.Get)('facebook'),
@@ -106,8 +104,9 @@ __decorate([
     (0, common_1.Get)('facebook/callback'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('facebook')),
     __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "facebookAuthRedirect", null);
 exports.AuthController = AuthController = __decorate([
