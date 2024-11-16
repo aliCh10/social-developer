@@ -24,4 +24,5 @@ export declare class AuthController {
     googleAuthRedirect(req: any, res: Response): Promise<void>;
     facebookAuth(req: any): Promise<void>;
     facebookAuthRedirect(req: any, res: Response): Promise<void>;
+    logout(req: any, res: Response): Promise<void>;
 }

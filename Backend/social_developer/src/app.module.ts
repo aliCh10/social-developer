@@ -8,6 +8,10 @@ import { AuthModule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
 import { PostsModule } from './posts/posts.module';
+import { MessageModule } from './message/message.module';
+import { ConversationModule } from './conversation/conversation.module';
+import { CommentModule } from './comments/comments.module';
+import { LikeModule } from './like/like.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot(
@@ -16,7 +20,7 @@ import { PostsModule } from './posts/posts.module';
    ConfigModule.forRoot({
     isGlobal: true, // Rend les variables d'environnement accessibles dans tout le projet
   }),
-   UserModule, AuthModule,PassportModule.register({ defaultStrategy: 'jwt' }), PostsModule],
+   UserModule, AuthModule,PassportModule.register({ defaultStrategy: 'jwt' }), PostsModule, MessageModule, ConversationModule, CommentModule, LikeModule],
   controllers: [AppController],
   providers: [AppService],
 })

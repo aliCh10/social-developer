@@ -16,13 +16,10 @@
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
     "feather-icons": "^4.29.2",
-
+    "framer-motion": "^11.11.8",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
-
-    "framer-motion": "^11.11.8",
     "mdb-react-ui-kit": "^9.0.0",
-
     "next": "14.2.13",
     "next-auth": "^5.0.0-beta.22",
     "owl.carousel": "^2.3.4",

@@ -5,6 +5,7 @@ import React from 'react';
 import { Zap, MessageCircle, Video, Search, Home, User, ShoppingBag, Bell, MessageSquare, Settings } from 'react-feather';
 import './css/style.css';
 import './css/themify-icons.css'; // Only keeping this if necessary
+import Link from 'next/link';
 
 function NavBarComponent() {
   useEffect(() => {
@@ -54,18 +55,19 @@ function NavBarComponent() {
         </div>
       </form>
 
-      <a href="default.html" className="p-2 text-center ms-3 menu-icon center-menu-icon">
+      <a href="/Home" className="p-2 text-center ms-3 menu-icon center-menu-icon">
         <Home size={24} className="font-lg alert-primary btn-round-lg theme-dark-bg text-current" style={{  borderRadius: '30%', padding: '7px' }} />
-      </a>
-      <a href="default-storie.html" className="p-2 text-center ms-0 menu-icon center-menu-icon">
+        </a>
+
+      <a href="/" className="p-2 text-center ms-0 menu-icon center-menu-icon">
         <Zap size={24} className="font-lg bg-greylight btn-round-lg theme-dark-bg text-grey-500"style={{  borderRadius: '30%', padding: '7px' }} />
       </a>
       <a href="default-video.html" className="p-2 text-center ms-0 menu-icon center-menu-icon">
         <Video size={24} className="font-lg bg-greylight btn-round-lg theme-dark-bg text-grey-500"style={{  borderRadius: '30%', padding: '7px' }} />
       </a>
-      <a href="default-group.html" className="p-2 text-center ms-0 menu-icon center-menu-icon">
+      <Link href="/suggestion" className="p-2 text-center ms-0 menu-icon center-menu-icon">
         <User size={24} className="font-lg bg-greylight btn-round-lg theme-dark-bg text-grey-500"style={{  borderRadius: '30%', padding: '7px' }} />
-      </a>
+      </Link>
       <a href="shop-2.html" className="p-2 text-center ms-0 menu-icon center-menu-icon">
         <ShoppingBag size={24} className="font-lg bg-greylight btn-round-lg theme-dark-bg text-grey-500"style={{  borderRadius: '30%', padding: '7px' }} />
       </a>

@@ -1,16 +1,21 @@
-import React from 'react';
-import SideBar from '../Componets/SideBar';
-import NavBarComponent from '../Componets/NavBarComponet';
+import React from 'react'
+import AccueilProfileComponet from '../Componets/Profile/AccueilProfileComponet'
+import NavBarComponent from '../Componets/NavBarComponet'
+import SideBar from '../Componets/SideBar'
 
-function Page() {
+const page = () => {
   return (
     <div>
-<NavBarComponent>
-    </NavBarComponent>   
-       <SideBar />
 
-      </div>
-  );
+        <div className="main-wrapper">
+      <NavBarComponent />
+      <SideBar />
+      <AccueilProfileComponet/>
+
+      
+    </div>
+    </div>
+  )
 }
 
-export default Page;
+export default page
