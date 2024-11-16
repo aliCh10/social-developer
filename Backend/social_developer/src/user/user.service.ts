@@ -38,6 +38,11 @@ export class UserService {
     return this.userRepository.save(newUser);
   }
 
+  // Find user by ID
+  async findOneById(userId: number): Promise<User | null> {
+    return await this.userRepository.findOne({ where: { id: userId } });
+  }
+
   // Find user by email or username
   async findOneByEmailOrUsername(email: string, username: string): Promise<User | null> {
     return await this.userRepository.findOne({ where: [{ email }, { username }] });
@@ -62,5 +67,49 @@ export class UserService {
   async save(user: User): Promise<User> {
     return this.userRepository.save(user);
   }
+
+  async followUser(userId: number, targetUserId: number): Promise<void> {
+    if (userId === targetUserId) {
+      throw new Error("You can't follow yourself");
+    }
+
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['following'],
+    });
+    const targetUser = await this.userRepository.findOne({ where: { id: targetUserId } });
+
+    if (!targetUser) {
+      throw new Error('User not found');
+    }
+
+    user.following.push(targetUser);
+    await this.userRepository.save(user);
+  }
+
+  async unfollowUser(userId: number, targetUserId: number): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['following'],
+    });
+
+    user.following = user.following.filter(user => user.id !== targetUserId);
+    await this.userRepository.save(user);
+  }
+
+  async getFollowers(userId: number): Promise<User[]> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['followers'],
+    });
+    return user ? user.followers : [];
+  }
+
+  async getFollowing(userId: number): Promise<User[]> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['following'],
+    });
+    return user ? user.following : [];
+  }
 }
-  

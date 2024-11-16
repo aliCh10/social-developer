@@ -11,6 +11,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const class_validator_1 = require("class-validator");
+const comment_entity_1 = require("../../comments/entities/comment.entity");
+const conversation_entity_1 = require("../../conversation/entities/conversation.entity");
+const like_entity_1 = require("../../like/entities/like.entity");
+const message_entity_1 = require("../../message/entities/message.entity");
 const post_entity_1 = require("../../posts/entities/post.entity");
 const typeorm_1 = require("typeorm");
 let User = class User {
@@ -46,6 +50,47 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => post_entity_1.Post, (post) => post.user),
     __metadata("design:type", Array)
 ], User.prototype, "posts", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => User, (user) => user.following),
+    (0, typeorm_1.JoinTable)({
+        name: 'user_followers',
+        joinColumn: { name: 'userId', referencedColumnName: 'id' },
+        inverseJoinColumn: { name: 'followerId', referencedColumnName: 'id' },
+    }),
+    __metadata("design:type", Array)
+], User.prototype, "followers", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => User, (user) => user.followers),
+    __metadata("design:type", Array)
+], User.prototype, "following", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => message_entity_1.Message, (message) => message.sender),
+    __metadata("design:type", Array)
+], User.prototype, "sentMessages", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => message_entity_1.Message, (message) => message.receiver),
+    __metadata("design:type", Array)
+], User.prototype, "receivedMessages", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => conversation_entity_1.Conversation, (conversation) => conversation.user1),
+    __metadata("design:type", Array)
+], User.prototype, "initiatedConversations", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => conversation_entity_1.Conversation, (conversation) => conversation.user2),
+    __metadata("design:type", Array)
+], User.prototype, "receivedConversations", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], User.prototype, "isOnline", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => comment_entity_1.Comment, (comment) => comment.user),
+    __metadata("design:type", Array)
+], User.prototype, "comments", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => like_entity_1.Like, like => like.post),
+    __metadata("design:type", Array)
+], User.prototype, "likes", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)()
 ], User);

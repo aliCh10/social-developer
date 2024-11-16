@@ -1,112 +1,125 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Post } from './entities/post.entity';
+import { UserService } from '../user/user.service';
 import { CreatePostDto } from './dto/create-post.dto';
-import { User } from 'src/user/entities/user.entity';
+import { Post } from './entities/post.entity';
+import { v2 as cloudinary } from 'cloudinary';
+import { unlink } from 'fs/promises';
+import { Readable } from 'stream';
 
 @Injectable()
-export class PostsService {
+export class PostService {
   constructor(
-    @InjectRepository(Post)
-    private readonly postRepository: Repository<Post>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userService: UserService,
+    @InjectRepository(Post) private readonly postsRepository: Repository<Post>,
   ) {}
 
-  // Create a post with an optional description or image
-  async create(createPostDto: CreatePostDto, file?: Express.Multer.File): Promise<Post> {
-    const { description,userId  } = createPostDto;
+  async create(
+    createPostDto: CreatePostDto,
+    imageFile: Express.Multer.File,
+  ): Promise<Post> {
+    const user = await this.userService.findOneById(createPostDto.userId);
 
-    // Validation: Either description or image is required
-    if (!description && !file) {
-      throw new BadRequestException('Either description or image is required');
-    }
-
-    const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(
+        `User with ID ${createPostDto.userId} not found`,
+      );
     }
 
+    let imagePath = '';
 
-    const post = new Post();
-    if (description) {
-      post.description = description;
+    if (imageFile) {
+      const validImageTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+      if (!validImageTypes.includes(imageFile.mimetype)) {
+        throw new BadRequestException(
+          'Invalid file type. Only .jpg, .jpeg, and .png are allowed.',
+        );
+      }
+
+      try {
+        if (imageFile.path) {
+          const uploadResult = await cloudinary.uploader.upload(imageFile.path, {
+            folder: 'posts',
+            public_id: `${Date.now()}`,
+            overwrite: true,
+          });
+
+          imagePath = uploadResult.secure_url;
+          await unlink(imageFile.path);
+        } else if (imageFile.buffer) {
+          const stream = Readable.from(imageFile.buffer);
+          const uploadResult = await new Promise((resolve, reject) => {
+            const streamUpload = cloudinary.uploader.upload_stream(
+              { folder: 'posts', public_id: `${Date.now()}`, overwrite: true },
+              (error, result) => {
+                if (error) return reject(error);
+                resolve(result);
+              },
+            );
+            stream.pipe(streamUpload);
+          });
+
+          imagePath = (uploadResult as any).secure_url;
+        }
+      } catch (error) {
+        console.error('Error uploading to Cloudinary:', error);
+        throw new BadRequestException('Failed to upload image to Cloudinary');
+      }
     }
 
-    if (file) {
-      post.imageUrl = file.filename; // Save the image filename
-    }
-    if (user) {
-      post.user = user; 
-    }
+    const post = this.postsRepository.create({
+      ...createPostDto,
+      user,
+      image: imagePath,
+    });
 
-    return await this.postRepository.save(post);
+    return this.postsRepository.save(post);
   }
 
-  // Fetch all posts
   async findAll(): Promise<Post[]> {
-    return await this.postRepository.find();
+    return this.postsRepository.find({ relations: ['user', 'comments'] });
+    
   }
 
-  // Fetch a post by ID
   async findOne(id: number): Promise<Post> {
-    const post = await this.postRepository.findOne({ where: { id } });
+    const post = await this.postsRepository.findOne({
+      where: { id },
+      relations: ['user', 'comments'],
+    });
+
     if (!post) {
-      throw new NotFoundException('Post not found');
+      throw new NotFoundException(`Post with ID ${id} not found`);
     }
+
     return post;
   }
 
+  async findByUserId(userId: number): Promise<Post[]> {
+    const posts = await this.postsRepository.find({
+      where: { user: { id: userId } },
+      relations: ['user', 'comments'],
+    });
+  
+    if (posts.length === 0) {
+      throw new NotFoundException(`No posts found for user with ID ${userId}`);
+    }
+  
+    return posts;
+  }
 
-
-
-
-  // Update a post with optional new description or image
-  async update(id: number, updatePostDto: CreatePostDto, file?: Express.Multer.File): Promise<Post> {
+  async delete(id: number): Promise<void> {
     const post = await this.findOne(id);
-    const { description} = updatePostDto;
 
-    if (!description && !file && !post.description && !post.imageUrl) {
-      throw new BadRequestException('Post must contain either a description or an image');
+    if (post.image) {
+      const publicId = post.image.split('/').pop().split('.')[0];
+      await cloudinary.uploader.destroy(`posts/${publicId}`);
     }
 
-    if (description) {
-      post.description = description;
-    }
-
-    if (file) {
-      post.imageUrl = file.filename;
-    }
-   
-
-    
-
-    return await this.postRepository.save(post);
+    await this.postsRepository.remove(post);
   }
-
-  // Delete a post by ID
-  async remove(id: number): Promise<void> {
-    const post = await this.findOne(id);
-    await this.postRepository.remove(post);
-  }
-
-
-
-
-
-  // get post by id user
-async getPostsByUserId(userId: number): Promise<Post[]> {
-  const user = await this.userRepository.findOne({ where: { id: userId } });
-  if (!user) {
-    throw new NotFoundException('User not found');
-  }
-
-  const posts = await this.postRepository.find({
-    where: { user: { id: userId } },
-    relations: ['user'], // Include related user data if needed
-  });
-
-  return posts;
-}
 }

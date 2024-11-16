@@ -10,6 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Post = void 0;
+const comment_entity_1 = require("../../comments/entities/comment.entity");
+const like_entity_1 = require("../../like/entities/like.entity");
 const user_entity_1 = require("../../user/entities/user.entity");
 const typeorm_1 = require("typeorm");
 let Post = class Post {
@@ -22,15 +24,23 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], Post.prototype, "description", void 0);
+], Post.prototype, "content", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Post.prototype, "imageUrl", void 0);
+], Post.prototype, "image", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.posts),
     __metadata("design:type", user_entity_1.User)
 ], Post.prototype, "user", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => comment_entity_1.Comment, (comment) => comment.post),
+    __metadata("design:type", Array)
+], Post.prototype, "comments", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => like_entity_1.Like, like => like.post),
+    __metadata("design:type", Array)
+], Post.prototype, "likes", void 0);
 exports.Post = Post = __decorate([
     (0, typeorm_1.Entity)()
 ], Post);

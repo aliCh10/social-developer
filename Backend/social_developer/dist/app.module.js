@@ -17,6 +17,10 @@ const auth_module_1 = require("./auth/auth.module");
 const passport_1 = require("@nestjs/passport");
 const config_1 = require("@nestjs/config");
 const posts_module_1 = require("./posts/posts.module");
+const message_module_1 = require("./message/message.module");
+const conversation_module_1 = require("./conversation/conversation.module");
+const comments_module_1 = require("./comments/comments.module");
+const like_module_1 = require("./like/like.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -26,7 +30,7 @@ exports.AppModule = AppModule = __decorate([
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
             }),
-            user_module_1.UserModule, auth_module_1.AuthModule, passport_1.PassportModule.register({ defaultStrategy: 'jwt' }), posts_module_1.PostsModule],
+            user_module_1.UserModule, auth_module_1.AuthModule, passport_1.PassportModule.register({ defaultStrategy: 'jwt' }), posts_module_1.PostsModule, message_module_1.MessageModule, conversation_module_1.ConversationModule, comments_module_1.CommentModule, like_module_1.LikeModule],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

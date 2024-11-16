@@ -1,13 +1,11 @@
-import { PostsService } from './posts.service';
+import { PostService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
-import { Post } from './entities/post.entity';
-export declare class PostsController {
-    private readonly postsService;
-    constructor(postsService: PostsService);
-    create(createPostDto: CreatePostDto, file: Express.Multer.File): Promise<Post>;
-    findAll(): Promise<Post[]>;
-    findOne(id: string): Promise<Post>;
-    getPostsByUserId(userId: number): Promise<Post[]>;
-    update(id: string, updatePostDto: CreatePostDto, file: Express.Multer.File): Promise<Post>;
-    remove(id: string): Promise<void>;
+export declare class PostController {
+    private readonly postService;
+    constructor(postService: PostService);
+    createPost(createPostDto: CreatePostDto, imageFile: Express.Multer.File): Promise<import("./entities/post.entity").Post>;
+    getAllPosts(): Promise<import("./entities/post.entity").Post[]>;
+    getPostById(id: number): Promise<import("./entities/post.entity").Post>;
+    getPostsByUserId(userId: number): Promise<import("./entities/post.entity").Post[]>;
+    deletePost(id: number): Promise<void>;
 }

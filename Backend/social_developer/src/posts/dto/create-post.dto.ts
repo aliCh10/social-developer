@@ -1,15 +1,12 @@
-import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreatePostDto {
-  @IsOptional()
-  @IsString()
-  description?: string;
-
-  @IsOptional()
-  @IsString()
-  image?: string; // Optional image field
-
-  @IsOptional()
-  @IsNotEmpty()
+  @IsInt()
+  @Type(() => Number) // Transforme les données reçues en nombre
   userId: number;
+
+  @IsOptional()
+  @IsString()
+  content?: string;
 }

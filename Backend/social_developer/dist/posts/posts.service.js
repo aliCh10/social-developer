@@ -12,84 +12,103 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PostsService = void 0;
+exports.PostService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
+const user_service_1 = require("../user/user.service");
 const post_entity_1 = require("./entities/post.entity");
-const user_entity_1 = require("../user/entities/user.entity");
-let PostsService = class PostsService {
-    constructor(postRepository, userRepository) {
-        this.postRepository = postRepository;
-        this.userRepository = userRepository;
+const cloudinary_1 = require("cloudinary");
+const promises_1 = require("fs/promises");
+const stream_1 = require("stream");
+let PostService = class PostService {
+    constructor(userService, postsRepository) {
+        this.userService = userService;
+        this.postsRepository = postsRepository;
     }
-    async create(createPostDto, file) {
-        const { description, userId } = createPostDto;
-        if (!description && !file) {
-            throw new common_1.BadRequestException('Either description or image is required');
-        }
-        const user = await this.userRepository.findOne({ where: { id: userId } });
+    async create(createPostDto, imageFile) {
+        const user = await this.userService.findOneById(createPostDto.userId);
         if (!user) {
-            throw new common_1.NotFoundException('User not found');
+            throw new common_1.NotFoundException(`User with ID ${createPostDto.userId} not found`);
         }
-        const post = new post_entity_1.Post();
-        if (description) {
-            post.description = description;
+        let imagePath = '';
+        if (imageFile) {
+            const validImageTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            if (!validImageTypes.includes(imageFile.mimetype)) {
+                throw new common_1.BadRequestException('Invalid file type. Only .jpg, .jpeg, and .png are allowed.');
+            }
+            try {
+                if (imageFile.path) {
+                    const uploadResult = await cloudinary_1.v2.uploader.upload(imageFile.path, {
+                        folder: 'posts',
+                        public_id: `${Date.now()}`,
+                        overwrite: true,
+                    });
+                    imagePath = uploadResult.secure_url;
+                    await (0, promises_1.unlink)(imageFile.path);
+                }
+                else if (imageFile.buffer) {
+                    const stream = stream_1.Readable.from(imageFile.buffer);
+                    const uploadResult = await new Promise((resolve, reject) => {
+                        const streamUpload = cloudinary_1.v2.uploader.upload_stream({ folder: 'posts', public_id: `${Date.now()}`, overwrite: true }, (error, result) => {
+                            if (error)
+                                return reject(error);
+                            resolve(result);
+                        });
+                        stream.pipe(streamUpload);
+                    });
+                    imagePath = uploadResult.secure_url;
+                }
+            }
+            catch (error) {
+                console.error('Error uploading to Cloudinary:', error);
+                throw new common_1.BadRequestException('Failed to upload image to Cloudinary');
+            }
         }
-        if (file) {
-            post.imageUrl = file.filename;
-        }
-        if (user) {
-            post.user = user;
-        }
-        return await this.postRepository.save(post);
+        const post = this.postsRepository.create({
+            ...createPostDto,
+            user,
+            image: imagePath,
+        });
+        return this.postsRepository.save(post);
     }
     async findAll() {
-        return await this.postRepository.find();
+        return this.postsRepository.find({ relations: ['user', 'comments'] });
     }
     async findOne(id) {
-        const post = await this.postRepository.findOne({ where: { id } });
+        const post = await this.postsRepository.findOne({
+            where: { id },
+            relations: ['user', 'comments'],
+        });
         if (!post) {
-            throw new common_1.NotFoundException('Post not found');
+            throw new common_1.NotFoundException(`Post with ID ${id} not found`);
         }
         return post;
     }
-    async update(id, updatePostDto, file) {
-        const post = await this.findOne(id);
-        const { description } = updatePostDto;
-        if (!description && !file && !post.description && !post.imageUrl) {
-            throw new common_1.BadRequestException('Post must contain either a description or an image');
-        }
-        if (description) {
-            post.description = description;
-        }
-        if (file) {
-            post.imageUrl = file.filename;
-        }
-        return await this.postRepository.save(post);
-    }
-    async remove(id) {
-        const post = await this.findOne(id);
-        await this.postRepository.remove(post);
-    }
-    async getPostsByUserId(userId) {
-        const user = await this.userRepository.findOne({ where: { id: userId } });
-        if (!user) {
-            throw new common_1.NotFoundException('User not found');
-        }
-        const posts = await this.postRepository.find({
+    async findByUserId(userId) {
+        const posts = await this.postsRepository.find({
             where: { user: { id: userId } },
-            relations: ['user'],
+            relations: ['user', 'comments'],
         });
+        if (posts.length === 0) {
+            throw new common_1.NotFoundException(`No posts found for user with ID ${userId}`);
+        }
         return posts;
     }
+    async delete(id) {
+        const post = await this.findOne(id);
+        if (post.image) {
+            const publicId = post.image.split('/').pop().split('.')[0];
+            await cloudinary_1.v2.uploader.destroy(`posts/${publicId}`);
+        }
+        await this.postsRepository.remove(post);
+    }
 };
-exports.PostsService = PostsService;
-exports.PostsService = PostsService = __decorate([
+exports.PostService = PostService;
+exports.PostService = PostService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(post_entity_1.Post)),
-    __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __metadata("design:paramtypes", [typeorm_2.Repository,
+    __param(1, (0, typeorm_1.InjectRepository)(post_entity_1.Post)),
+    __metadata("design:paramtypes", [user_service_1.UserService,
         typeorm_2.Repository])
-], PostsService);
+], PostService);
 //# sourceMappingURL=posts.service.js.map
