@@ -6,11 +6,11 @@ import AccueilProfileComponet from '../Componets/Profile/AccueilProfileComponet'
 function Page() {
   return (
     <div>
-<NavBarComponent/>
-       <SideBar />
-       <AccueilProfileComponet/>
+      <NavBarComponent />
+      <SideBar />
+      <AccueilProfileComponet />
 
-      </div>
+    </div>
   );
 }
 
