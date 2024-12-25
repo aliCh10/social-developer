@@ -61,6 +61,9 @@ let LikeService = class LikeService {
         });
         return likes;
     }
+    async getalllikes() {
+        return this.likeRepository.find();
+    }
 };
 exports.LikeService = LikeService;
 exports.LikeService = LikeService = __decorate([
