@@ -1,23 +1,24 @@
 'use client';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import jwt from 'jsonwebtoken'; 
+import jwt from 'jsonwebtoken';
 
 function SuggestionComponent() {
-  const [users, setUsers] = useState([]); 
-  const [loading, setLoading] = useState(true); 
-  const [id, setId] = useState(null); 
-  const [followers, setFollowers] = useState([]); 
-  const [following, setFollowing] = useState([]); 
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState(null); // Local state for userId
+  const [following, setFollowing] = useState([]);
 
   useEffect(() => {
+    // Get the current user's ID from the JWT token
     const getUserId = async () => {
       try {
         const token = localStorage.getItem('token');
         if (token) {
           const decodedToken = jwt.decode(token);
           if (decodedToken?.id) {
-            setId(decodedToken.id);
+            setUserId(decodedToken.id);
+            localStorage.setItem('userId', decodedToken.id);
           }
         }
       } catch (error) {
@@ -28,6 +29,7 @@ function SuggestionComponent() {
   }, []);
 
   useEffect(() => {
+    // Fetch all users
     const fetchUsers = async () => {
       try {
         const response = await axios.get('http://localhost:3000/user');
@@ -42,75 +44,37 @@ function SuggestionComponent() {
   }, []);
 
   useEffect(() => {
-    if (!id) return;
-
+    // Fetch followers and following for the logged-in user
     const fetchFollowersAndFollowing = async () => {
+      if (!userId) return; // Ensure userId is available
       try {
-        const responseFollowers = await axios.get(`http://localhost:3000/user/${id}/followers`);
-          
-        const responseFollowing = await axios.get(`http://localhost:3000/user/${id}/following`);
-
-
-        console.log(responseFollowers.data.followers);
-        console.log(responseFollowing.data.following);
-        // setFollowers(responseFollowers.data);
-         setFollowing(responseFollowing.data.following);
-        } catch (error) {
-          console.error('Erreur lors de la récupération des followers et des utilisateurs suivis:', error)
-            }
-
-
-        
-
-      // try {
-      //   const [followersResponse, followingResponse] = await Promise.all([
-      //     axios.get(`http://localhost:3000/user/${id}/followers`),
-      //     axios.get(`http://localhost:3000/user/${id}/following`)
-          
-      //   ]);
-
-      //   setFollowers(followersResponse.data.followers || []);
-      //   setFollowing(followingResponse.data.following || []);
-      // } catch (error) {
-      //   console.error('Erreur lors de la récupération des followers et following:', error);
-      // }
-    
-
-
+        const responseFollowing = await axios.get(`http://localhost:3000/user/${userId}/following`);
+        setFollowing(responseFollowing.data.following || []);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des utilisateurs suivis:', error);
+      }
     };
-
     fetchFollowersAndFollowing();
-  }, [id]);
+  }, [userId]);
 
-  const handleFollow = async (iduser, idautreuser) => {
+  const handleFollow = async (currentUserId, targetUserId) => {
+    try {
+      await axios.post(`http://localhost:3000/user/${currentUserId}/follow/${targetUserId}`);
+      setFollowing([...following, targetUserId]);
+    } catch (error) {
+      console.error('Erreur lors du suivi de l\'utilisateur:', error);
+    }
+  };
 
-
+  const handleUnfollow = async (currentUserId, targetUserId) => {
+    console.log(currentUserId,targetUserId);
     
-    console.log(idautreuser in following);
-
-    
-
-    
-
-
-    
-    
-    //console.log(!following.includes(idautreuser));
-
-    
-    //  try {
-    //    if (!following.includes(idautreuser)) {
-    //     await axios.post(`http://localhost:3000/user/${iduser}/follow/${idautreuser}`);
-    //     setFollowing([...following, idautreuser]);
-    //   } else {
-    //     await axios.post(`http://localhost:3000/user/${iduser}/unfollow/${idautreuser}`);
-    //     setFollowing(following.filter(id => id !== idautreuser));
-    //   }
-    // } catch (error) {
-    //   console.error('Error following/unfollowing user:', error);
-    // }
-
-    
+      try {
+       await axios.delete(`http://localhost:3000/user/${currentUserId}/unfollow/${targetUserId}`);
+       setFollowing(following.filter((id) => id !== targetUserId));
+     } catch (error) {
+       console.error('Erreur lors du non-suivi de l\'utilisateur:', error);
+     }
   };
 
   if (loading) {
@@ -128,7 +92,11 @@ function SuggestionComponent() {
                   <h2 className="fw-700 mb-0 mt-0 font-md text-grey-900">Group</h2>
                   <div className="search-form-2 ms-auto">
                     <i className="ti-search font-xss"></i>
-                    <input type="text" className="form-control text-grey-500 mb-0 bg-greylight theme-dark-bg border-0" placeholder="Search here." />
+                    <input
+                      type="text"
+                      className="form-control text-grey-500 mb-0 bg-greylight theme-dark-bg border-0"
+                      placeholder="Search here."
+                    />
                   </div>
                   <a href="#" className="btn-round-md ms-2 bg-greylight theme-dark-bg rounded-3">
                     <i className="feather-filter font-xss text-grey-500"></i>
@@ -138,7 +106,7 @@ function SuggestionComponent() {
 
               <div className="row ps-2 pe-1">
                 {users
-                  .filter((user) => user._id !== id) // Ne pas afficher l'utilisateur actuel
+                  .filter((user) => user.id !== userId) // Exclude the logged-in user
                   .map((user) => (
                     <div className="col-md-6 pe-2 ps-2" key={user._id}>
                       <div className="card d-block border-0 shadow-xss rounded-3 overflow-hidden mb-3">
@@ -159,17 +127,25 @@ function SuggestionComponent() {
                           </figure>
                           <div className="clearfix"></div>
                           <h4 className="fw-700 font-xsss mt-3 mb-1">{user.username}</h4>
-                          <p className="fw-500 font-xsssss text-grey-500 mt-0 mb-3">
-                            {user.email}
-                          </p>
-                          <button
-                            onClick={() => handleFollow(id, user.id)}
-                            className={`btn ${
-                              following.includes(user.id) ? 'btn-danger' : 'btn-primary'
-                            }`}
-                          >
-                            {following.includes(user.id) ? 'UNFOLLOW' : 'FOLLOW'}
-                          </button>
+                          <p className="fw-500 font-xsssss text-grey-500 mt-0 mb-3">{user.email}</p>
+                          
+                          {/* Display Follow and Unfollow buttons */}
+                          {!following.includes(user.id) && (
+                            <button
+                              onClick={() => handleFollow(userId, user.id)}
+                              className="btn btn-primary"
+                            >
+                              FOLLOW
+                            </button>
+                          )}
+                          {following.includes(user.id) && (
+                            <button
+                              onClick={() => handleUnfollow(userId, user.id)}
+                              className="btn btn-danger"
+                            >
+                              UNFOLLOW
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>

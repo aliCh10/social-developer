@@ -60,6 +60,7 @@ export const LoginComponet = () => {
             console.log(response.data.token.access_token);
 
             localStorage.setItem('token', response.data.token.access_token);
+            
             setAlert({ message: 'Login successful!', type: 'success', show: true });
             setTimeout(() => {
                 window.location.href = '/Home';
