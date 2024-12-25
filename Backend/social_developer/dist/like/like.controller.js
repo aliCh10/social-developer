@@ -29,6 +29,9 @@ let LikeController = class LikeController {
     async getLikesCount(postId) {
         return this.likeService.getLikesCount(postId);
     }
+    async getAllLikes() {
+        return this.likeService.getalllikes();
+    }
 };
 exports.LikeController = LikeController;
 __decorate([
@@ -69,6 +72,14 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], LikeController.prototype, "getLikesCount", null);
+__decorate([
+    (0, common_1.Get)('all'),
+    (0, swagger_1.ApiOperation)({ summary: 'Obtenir tous les likes' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Tous les likes retournés' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], LikeController.prototype, "getAllLikes", null);
 exports.LikeController = LikeController = __decorate([
     (0, swagger_1.ApiTags)('likes'),
     (0, common_1.Controller)('likes'),

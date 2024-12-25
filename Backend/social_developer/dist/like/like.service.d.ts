@@ -10,4 +10,5 @@ export declare class LikeService {
     addLike(postId: number, userId: number): Promise<Like>;
     removeLike(postId: number, userId: number): Promise<void>;
     getLikesCount(postId: number): Promise<number>;
+    getalllikes(): Promise<Like[]>;
 }

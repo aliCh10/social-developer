@@ -1,4 +1,4 @@
-import { Controller, Post, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Post, Delete, Param, Body, Get } from '@nestjs/common';
 import { LikeService } from './like.service';
 import { ApiOperation, ApiResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 
@@ -36,4 +36,5 @@ export class LikeController {
   async getLikesCount(@Param('postId') postId: number) {
     return this.likeService.getLikesCount(postId);
   }
+
 }

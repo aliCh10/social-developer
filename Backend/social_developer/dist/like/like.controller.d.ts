@@ -5,4 +5,5 @@ export declare class LikeController {
     addLike(postId: number, userId: number): Promise<import("./entities/like.entity").Like>;
     removeLike(postId: number, userId: number): Promise<void>;
     getLikesCount(postId: number): Promise<number>;
+    getAllLikes(): Promise<import("./entities/like.entity").Like[]>;
 }
