@@ -51,4 +51,18 @@ export class UserController {
     const following = await this.userService.getFollowing(userId);
     return { following };
   }
+
+
+  @Get(':id/user')
+  async getuser(@Param('id', ParseIntPipe) userId: number) {
+    const user = await this.userService.findOneById(userId);
+    return { user };
+  }
+
+  @Get()
+  async getAllUsers(): Promise<User[]> {
+    return await this.userService.getAllUsers();
+    }
+
+
 }

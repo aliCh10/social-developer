@@ -38,6 +38,12 @@ export class UserService {
     return this.userRepository.save(newUser);
   }
 
+  //get all user
+  async getAllUsers(): Promise<User[]> {
+    return this.userRepository.find();
+    }
+
+
   // Find user by ID
   async findOneById(userId: number): Promise<User | null> {
     return await this.userRepository.findOne({ where: { id: userId } });

@@ -17,4 +17,8 @@ export declare class UserController {
     getFollowing(userId: number): Promise<{
         following: User[];
     }>;
+    getuser(userId: number): Promise<{
+        user: User;
+    }>;
+    getAllUsers(): Promise<User[]>;
 }

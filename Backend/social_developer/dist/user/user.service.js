@@ -40,6 +40,9 @@ let UserService = class UserService {
         const newUser = this.userRepository.create(userDto);
         return this.userRepository.save(newUser);
     }
+    async getAllUsers() {
+        return this.userRepository.find();
+    }
     async findOneById(userId) {
         return await this.userRepository.findOne({ where: { id: userId } });
     }

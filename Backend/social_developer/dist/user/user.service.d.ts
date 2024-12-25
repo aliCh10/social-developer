@@ -7,6 +7,7 @@ export declare class UserService {
     create(createUserDto: CreateUserDto): Promise<User>;
     createGoogleUser(userDto: Partial<User>): Promise<User>;
     createFacebookUser(userDto: Partial<User>): Promise<User>;
+    getAllUsers(): Promise<User[]>;
     findOneById(userId: number): Promise<User | null>;
     findOneByEmailOrUsername(email: string, username: string): Promise<User | null>;
     findOneByEmail(email: string): Promise<User | null>;

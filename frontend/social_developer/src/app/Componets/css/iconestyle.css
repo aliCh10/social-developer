@@ -1,0 +1,13 @@
+.icon-style {
+    transition: transform 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.icon-style:hover {
+    transform: scale(1.2); /* Agrandit l'icône au survol */
+}
+
+/* Exemple de classe d'espacement */
+.me-2 {
+    margin-right: 0.5rem;
+}

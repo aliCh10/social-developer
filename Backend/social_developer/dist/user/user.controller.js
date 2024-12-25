@@ -46,6 +46,13 @@ let UserController = class UserController {
         const following = await this.userService.getFollowing(userId);
         return { following };
     }
+    async getuser(userId) {
+        const user = await this.userService.findOneById(userId);
+        return { user };
+    }
+    async getAllUsers() {
+        return await this.userService.getAllUsers();
+    }
 };
 exports.UserController = UserController;
 __decorate([
@@ -88,6 +95,19 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getFollowing", null);
+__decorate([
+    (0, common_1.Get)(':id/user'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getuser", null);
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getAllUsers", null);
 exports.UserController = UserController = __decorate([
     (0, swagger_1.ApiTags)('User Management'),
     (0, common_1.Controller)('user'),
