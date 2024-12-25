@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException, NotFoundException, ParseIntPipe } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -22,4 +22,47 @@ export class UserController {
       throw new BadRequestException(error.message);
     }
   }
+  @Post(':id/follow/:targetId')
+  async followUser(
+    @Param('id', ParseIntPipe) userId: number,
+    @Param('targetId', ParseIntPipe) targetUserId: number,
+  ) {
+    await this.userService.followUser(userId, targetUserId);
+    return { message: 'User followed successfully' };
+  }
+
+  @Delete(':id/unfollow/:targetId')
+  async unfollowUser(
+    @Param('id', ParseIntPipe) userId: number,
+    @Param('targetId', ParseIntPipe) targetUserId: number,
+  ) {
+    await this.userService.unfollowUser(userId, targetUserId);
+    return { message: 'User unfollowed successfully' };
+  }
+
+  @Get(':id/followers')
+  async getFollowers(@Param('id', ParseIntPipe) userId: number) {
+    const followers = await this.userService.getFollowers(userId);
+    return { followers };
+  }
+
+  @Get(':id/following')
+  async getFollowing(@Param('id', ParseIntPipe) userId: number) {
+    const following = await this.userService.getFollowing(userId);
+    return { following };
+  }
+
+
+  @Get(':id/user')
+  async getuser(@Param('id', ParseIntPipe) userId: number) {
+    const user = await this.userService.findOneById(userId);
+    return { user };
+  }
+
+  @Get()
+  async getAllUsers(): Promise<User[]> {
+    return await this.userService.getAllUsers();
+    }
+
+
 }

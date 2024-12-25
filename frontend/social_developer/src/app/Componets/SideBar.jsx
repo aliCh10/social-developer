@@ -39,7 +39,7 @@ const SideBar = () => {
                 </a>
               </li>
               <li>
-                <a href="user-page.html" className="nav-content-bttn open-font">
+                <a href="/profile" className="nav-content-bttn open-font">
                   <User size={50} className="me-3" style={{ backgroundColor: '#2196F3', borderRadius: '35%', padding: '5%' ,color:'white', }} />
                   <span>Author Profile</span>
                 </a>

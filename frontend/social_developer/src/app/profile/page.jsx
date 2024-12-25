@@ -3,15 +3,19 @@ import SideBar from '../Componets/SideBar';
 import NavBarComponent from '../Componets/NavBarComponet';
 import AccueilProfileComponet from '../Componets/Profile/AccueilProfileComponet';
 
-function Page() {
+const page = () => {
   return (
     <div>
+
+        <div className="main-wrapper">
       <NavBarComponent />
       <SideBar />
-      <AccueilProfileComponet />
+      <AccueilProfileComponet/>
 
+      
     </div>
-  );
+    </div>
+  )
 }
 
-export default Page;
+export default page

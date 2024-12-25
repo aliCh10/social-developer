@@ -30,6 +30,29 @@ let UserController = class UserController {
             throw new common_1.BadRequestException(error.message);
         }
     }
+    async followUser(userId, targetUserId) {
+        await this.userService.followUser(userId, targetUserId);
+        return { message: 'User followed successfully' };
+    }
+    async unfollowUser(userId, targetUserId) {
+        await this.userService.unfollowUser(userId, targetUserId);
+        return { message: 'User unfollowed successfully' };
+    }
+    async getFollowers(userId) {
+        const followers = await this.userService.getFollowers(userId);
+        return { followers };
+    }
+    async getFollowing(userId) {
+        const following = await this.userService.getFollowing(userId);
+        return { following };
+    }
+    async getuser(userId) {
+        const user = await this.userService.findOneById(userId);
+        return { user };
+    }
+    async getAllUsers() {
+        return await this.userService.getAllUsers();
+    }
 };
 exports.UserController = UserController;
 __decorate([
@@ -42,6 +65,49 @@ __decorate([
     __metadata("design:paramtypes", [create_user_dto_1.CreateUserDto]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)(':id/follow/:targetId'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('targetId', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "followUser", null);
+__decorate([
+    (0, common_1.Delete)(':id/unfollow/:targetId'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Param)('targetId', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "unfollowUser", null);
+__decorate([
+    (0, common_1.Get)(':id/followers'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getFollowers", null);
+__decorate([
+    (0, common_1.Get)(':id/following'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getFollowing", null);
+__decorate([
+    (0, common_1.Get)(':id/user'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getuser", null);
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getAllUsers", null);
 exports.UserController = UserController = __decorate([
     (0, swagger_1.ApiTags)('User Management'),
     (0, common_1.Controller)('user'),

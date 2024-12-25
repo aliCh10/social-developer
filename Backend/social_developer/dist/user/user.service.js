@@ -40,6 +40,12 @@ let UserService = class UserService {
         const newUser = this.userRepository.create(userDto);
         return this.userRepository.save(newUser);
     }
+    async getAllUsers() {
+        return this.userRepository.find();
+    }
+    async findOneById(userId) {
+        return await this.userRepository.findOne({ where: { id: userId } });
+    }
     async findOneByEmailOrUsername(email, username) {
         return await this.userRepository.findOne({ where: [{ email }, { username }] });
     }
@@ -54,6 +60,43 @@ let UserService = class UserService {
     }
     async save(user) {
         return this.userRepository.save(user);
+    }
+    async followUser(userId, targetUserId) {
+        if (userId === targetUserId) {
+            throw new Error("You can't follow yourself");
+        }
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            relations: ['following'],
+        });
+        const targetUser = await this.userRepository.findOne({ where: { id: targetUserId } });
+        if (!targetUser) {
+            throw new Error('User not found');
+        }
+        user.following.push(targetUser);
+        await this.userRepository.save(user);
+    }
+    async unfollowUser(userId, targetUserId) {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            relations: ['following'],
+        });
+        user.following = user.following.filter(user => user.id !== targetUserId);
+        await this.userRepository.save(user);
+    }
+    async getFollowers(userId) {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            relations: ['followers'],
+        });
+        return user ? user.followers : [];
+    }
+    async getFollowing(userId) {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            relations: ['following'],
+        });
+        return user ? user.following : [];
     }
 };
 exports.UserService = UserService;
